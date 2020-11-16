@@ -23,6 +23,51 @@ public class Stepdefs {
         element.click();   
     }    
     
+    @Given("user with username {string} with password {string} is successfully created")
+    public void userIsCreated(String username, String password) {
+    	newUserIsSelected();
+    	createUserWith(username, password, password);
+    	WebElement element = driver.findElement(By.linkText("continue to application mainpage"));
+    	element.click();
+    	element = driver.findElement(By.linkText("logout"));
+    	element.click();
+    }
+    
+    @Given("user with username {string} and password {string} is tried to be created")
+    public void userIsTriedToBeCreated(String username, String password) {
+    	newUserIsSelected();
+    	createUserWith(username, password, password);
+    	WebElement element = driver.findElement(By.linkText("back to home"));
+    	element.click();
+    }
+    
+    @Given("command new user is selected")
+    public void newUserIsSelected() {
+    	driver.get(baseUrl);
+    	WebElement element = driver.findElement(By.linkText("register new user"));
+    	element.click();
+    }
+    
+    @When("a valid username {string} and password {string} and matching password confirmation are entered")
+    public void validUsernameAndPasswordAreGiven(String username, String password) {
+    	createUserWith(username, password, password);
+    }
+ 
+    @When("too short username {string} and password {string} and matching password confirmation are entered")
+    public void tooShortUsernameAndPasswordAreGiven(String username, String password) {
+    	createUserWith(username, password, password);
+    }
+    
+    @When("username {string} and too short passowrd {string} and matching password confirmation are entered")
+    public void usernameAndTooShortPasswordAreGiven(String username, String password) {
+    	createUserWith(username, password, password);
+    }
+    
+    @When("username {string} and password {string} and not matching password confirmation are entered")
+    public void usernameAndNotMatchingPasswordAreGiven(String username, String password) {
+    	createUserWith(username, password, password+"1");
+    }
+    
     @When("correct username {string} and password {string} are given")
     public void correctUsernameAndPasswordAreGiven(String username, String password) {
         logInWith(username, password);
@@ -47,7 +92,13 @@ public class Stepdefs {
     public void userIsNotLoggedInAndErrorMessageIsGiven() {
         pageHasContent("invalid username or password");
         pageHasContent("Give your credentials to login");
-    }    
+    }
+    
+    @Then("user is not created and error {string} is reported")
+    public void userIsNotCreatedAndErrorMessageIsGiven(String error) {
+        pageHasContent(error);
+        pageHasContent("Create username and give password");
+    }  
     
     @When("username {string} and password {string} are given")
     public void usernameAndPasswordAreGiven(String username, String password) throws Throwable {
@@ -57,6 +108,11 @@ public class Stepdefs {
     @Then("system will respond {string}")
     public void systemWillRespond(String pageContent) throws Throwable {
         assertTrue(driver.getPageSource().contains(pageContent));
+    }
+    
+    @Then("a new user is created")
+    public void newUserIsCreated() {
+    	pageHasContent("Welcome to Ohtu Application");
     }
     
     @After
@@ -78,5 +134,16 @@ public class Stepdefs {
         element.sendKeys(password);
         element = driver.findElement(By.name("login"));
         element.submit();  
-    } 
+    }
+    
+    private void createUserWith(String username, String password, String passwordConfirmation) {
+    	WebElement element = driver.findElement(By.name("username"));
+    	element.sendKeys(username);
+    	element = driver.findElement(By.name("password"));
+    	element.sendKeys(password);
+    	element = driver.findElement(By.name("passwordConfirmation"));
+    	element.sendKeys(passwordConfirmation);
+    	element = driver.findElement(By.name("signup"));
+    	element.submit();
+    }
 }
