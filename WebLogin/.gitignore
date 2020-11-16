@@ -5,5 +5,4 @@
 build
 /bin/
 
-
-.salasanat.txt
+*.txt
